@@ -289,16 +289,16 @@ class KGEModel(nn.Module):
         score = self.gamma.item() - torch.norm(score, p=1, dim=2)
         THAT IS WHY WHILE WE ARE USING NEG_SCORE WE MULTIPLY IT WITH -1
         '''
-        #print("negative score calculation is started...")
+        print("negative score calculation is started...")
         negative_score = model((positive_sample, negative_sample), mode,  two_gamma=1)
-        #print("Negative score shape: ", negative_score.shape)
-        #print("Negative score: ", negative_score)
+        print("Negative score shape: ", negative_score.shape)
+        print("Negative score: ", negative_score)
 
         if args.negative_adversarial_sampling:
             #In self-adversarial sampling, we do not apply back-propagation on the sampling weight
             negative_score = (F.softmax(negative_score * args.adversarial_temperature, dim = 1).detach() 
                               * F.logsigmoid(-negative_score)).sum(dim = 1)
-            #print("Negative adversarial sampling is made")
+            print("Negative adversarial sampling is made")
         else:
             #READ ABOVE COMMENT WHICH IS ABOUT HOW SCORE IS CALCULATED
             #first takes the relu then takes the mean
@@ -309,19 +309,20 @@ class KGEModel(nn.Module):
             logsigmoid:
             negative_score = F.logsigmoid(-negative_score).mean(dim = 1)
             '''
-
+            negative_score = F.logsigmoid(-negative_score).mean(dim=1)
+            print("Negative_score_logsigmoid: ", negative_score)
             '''
             
             relu:
             '''
-            negative_score = F.relu(negative_score).mean(dim=1)
+            negative_score_relu = F.relu(negative_score).mean(dim=1)
+            print("Negative_score_relu: ", negative_score_relu)
 
-            #print("Negative score after logsimoid and meaned :",negative_score)
 
-        #print("positive score calculation is started...")
+        print("positive score calculation is started...")
         positive_score = model(positive_sample, two_gamma=0)
-        #print("Positive score shape: ", positive_score.shape)
-        #print("Positive score: ", positive_score)
+        print("Positive score shape: ", positive_score.shape)
+        print("Positive score: ", positive_score)
 
         # if you use ReLU USE -(negative sign) in front of the score.
 
@@ -329,13 +330,14 @@ class KGEModel(nn.Module):
         logsigmoid:
         positive_score = F.logsigmoid(positive_score).squeeze(dim = 1)
         '''
-
+        positive_score = F.logsigmoid(positive_score).squeeze(dim=1)
+        print("Positive_score_logsigmoid: ", positive_score)
         '''
         relu:
         '''
-        positive_score = F.relu(positive_score).squeeze(dim=1)
+        positive_score_relu = F.relu(positive_score).squeeze(dim=1)
+        print("Positive_score_relu: ", positive_score_relu)
 
-        #print("Positive score after logsimoid and squeezed :",positive_score)
 
         if args.uni_weight:
             #print("uni_weight...")
@@ -344,13 +346,14 @@ class KGEModel(nn.Module):
             positive_sample_loss = -positive_score.mean()
             negative_sample_loss = -negative_score.mean()
             '''
-
+            positive_sample_loss = -positive_score.mean()
+            negative_sample_loss = -negative_score.mean()
 
             '''
             open comments for relu
             '''
-            positive_sample_loss = positive_score.mean()
-            negative_sample_loss = negative_score.mean()
+            positive_sample_loss_relu = positive_score_relu.mean()
+            negative_sample_loss_relu = negative_score_relu.mean()
 
         else:
             #print("non uni_weight.. something with subsampling going on...")
@@ -359,16 +362,20 @@ class KGEModel(nn.Module):
             positive_sample_loss = -(subsampling_weight * positive_score).sum()/subsampling_weight.sum()
             negative_sample_loss = -(subsampling_weight * negative_score).sum()/subsampling_weight.sum()
             '''
-
+            positive_sample_loss = -(subsampling_weight * positive_score).sum() / subsampling_weight.sum()
+            negative_sample_loss = -(subsampling_weight * negative_score).sum() / subsampling_weight.sum()
 
             '''
             open comments for relu
             '''
-            positive_sample_loss = (subsampling_weight * positive_score).sum() / subsampling_weight.sum()
-            negative_sample_loss = (subsampling_weight * negative_score).sum() / subsampling_weight.sum()
+            positive_sample_loss_relu = (subsampling_weight * positive_score_relu).sum() / subsampling_weight.sum()
+            negative_sample_loss_relu = (subsampling_weight * negative_score_relu).sum() / subsampling_weight.sum()
 
-        #print("positive_sample_loss: ", positive_sample_loss)
-        #print("negative_sample_loss: ", negative_sample_loss)
+
+        print("Positive_sample_loss_logsigmoid: ", positive_sample_loss)
+        print("Negative_sample_loss_logsigmoid: ", negative_sample_loss)
+        print("Positive_sample_loss_relu: ", positive_sample_loss_relu)
+        print("Negative_sample_loss_relu: ", negative_sample_loss_relu)
         loss = (positive_sample_loss + negative_sample_loss)/2
         
         if args.regularization != 0.0:
