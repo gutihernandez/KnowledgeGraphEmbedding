@@ -307,10 +307,10 @@ class KGEModel(nn.Module):
 
             '''
             logsigmoid:
-            negative_score = F.logsigmoid(-negative_score).mean(dim = 1)
+            negative_score_logsigmoid = F.logsigmoid(-negative_score_logsigmoid).mean(dim = 1)
             '''
-            negative_score = F.logsigmoid(-negative_score).mean(dim=1)
-            print("Negative_score_logsigmoid: ", negative_score)
+            negative_score_logsigmoid = F.logsigmoid(-negative_score).mean(dim=1)
+            print("Negative_score_logsigmoid: ", negative_score_logsigmoid)
             '''
             
             relu:
@@ -330,8 +330,8 @@ class KGEModel(nn.Module):
         logsigmoid:
         positive_score = F.logsigmoid(positive_score).squeeze(dim = 1)
         '''
-        positive_score = F.logsigmoid(positive_score).squeeze(dim=1)
-        print("Positive_score_logsigmoid: ", positive_score)
+        positive_score_logsigmoid = F.logsigmoid(positive_score).squeeze(dim=1)
+        print("Positive_score_logsigmoid: ", positive_score_logsigmoid)
         '''
         relu:
         '''
@@ -343,11 +343,11 @@ class KGEModel(nn.Module):
             #print("uni_weight...")
             '''
             open comments for logsigmoid
-            positive_sample_loss = -positive_score.mean()
-            negative_sample_loss = -negative_score.mean()
+            positive_sample_loss = -positive_score_logsigmoid.mean()
+            negative_sample_loss = -negative_score_logsigmoid.mean()
             '''
-            positive_sample_loss = -positive_score.mean()
-            negative_sample_loss = -negative_score.mean()
+            positive_sample_loss = -positive_score_logsigmoid.mean()
+            negative_sample_loss = -negative_score_logsigmoid.mean()
 
             '''
             open comments for relu
@@ -359,11 +359,11 @@ class KGEModel(nn.Module):
             #print("non uni_weight.. something with subsampling going on...")
             '''
             open comments for logsigmoid
-            positive_sample_loss = -(subsampling_weight * positive_score).sum()/subsampling_weight.sum()
-            negative_sample_loss = -(subsampling_weight * negative_score).sum()/subsampling_weight.sum()
+            positive_sample_loss = -(subsampling_weight * positive_score_logsigmoid).sum()/subsampling_weight.sum()
+            negative_sample_loss = -(subsampling_weight * negative_score_logsigmoid).sum()/subsampling_weight.sum()
             '''
-            positive_sample_loss = -(subsampling_weight * positive_score).sum() / subsampling_weight.sum()
-            negative_sample_loss = -(subsampling_weight * negative_score).sum() / subsampling_weight.sum()
+            positive_sample_loss = -(subsampling_weight * positive_score_logsigmoid).sum() / subsampling_weight.sum()
+            negative_sample_loss = -(subsampling_weight * negative_score_logsigmoid).sum() / subsampling_weight.sum()
 
             '''
             open comments for relu
