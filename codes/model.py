@@ -307,17 +307,16 @@ class KGEModel(nn.Module):
 
             '''
             logsigmoid:
-            negative_score_logsigmoid = F.logsigmoid(-negative_score_logsigmoid).mean(dim = 1)
+            negative_score = F.logsigmoid(-negative_score).mean(dim = 1)
             '''
-            negative_score_logsigmoid = F.logsigmoid(-negative_score).mean(dim=1)
-            print("Negative_score_logsigmoid: ", negative_score_logsigmoid)
+
             '''
             
             relu:
             '''
-            negative_score_relu = F.relu(negative_score).mean(dim=1)
-            print("Negative_score_relu: ", negative_score_relu)
+            negative_score = F.relu(negative_score).mean(dim=1)
 
+            print("Negative score after logsimoid and meaned :",negative_score)
 
         print("positive score calculation is started...")
         positive_score = model(positive_sample, two_gamma=0)
@@ -330,52 +329,46 @@ class KGEModel(nn.Module):
         logsigmoid:
         positive_score = F.logsigmoid(positive_score).squeeze(dim = 1)
         '''
-        positive_score_logsigmoid = F.logsigmoid(positive_score).squeeze(dim=1)
-        print("Positive_score_logsigmoid: ", positive_score_logsigmoid)
+
         '''
         relu:
         '''
-        positive_score_relu = F.relu(positive_score).squeeze(dim=1)
-        print("Positive_score_relu: ", positive_score_relu)
+        positive_score = F.relu(positive_score).squeeze(dim=1)
 
+        print("Positive score after logsimoid and squeezed :",positive_score)
 
         if args.uni_weight:
-            #print("uni_weight...")
+            print("uni_weight...")
             '''
             open comments for logsigmoid
-            positive_sample_loss = -positive_score_logsigmoid.mean()
-            negative_sample_loss = -negative_score_logsigmoid.mean()
+            positive_sample_loss = -positive_score.mean()
+            negative_sample_loss = -negative_score.mean()
             '''
-            positive_sample_loss = -positive_score_logsigmoid.mean()
-            negative_sample_loss = -negative_score_logsigmoid.mean()
+
 
             '''
             open comments for relu
             '''
-            positive_sample_loss_relu = positive_score_relu.mean()
-            negative_sample_loss_relu = negative_score_relu.mean()
+            positive_sample_loss = positive_score.mean()
+            negative_sample_loss = negative_score.mean()
 
         else:
-            #print("non uni_weight.. something with subsampling going on...")
+            print("non uni_weight.. something with subsampling going on...")
             '''
             open comments for logsigmoid
-            positive_sample_loss = -(subsampling_weight * positive_score_logsigmoid).sum()/subsampling_weight.sum()
-            negative_sample_loss = -(subsampling_weight * negative_score_logsigmoid).sum()/subsampling_weight.sum()
+            positive_sample_loss = -(subsampling_weight * positive_score).sum()/subsampling_weight.sum()
+            negative_sample_loss = -(subsampling_weight * negative_score).sum()/subsampling_weight.sum()
             '''
-            positive_sample_loss = -(subsampling_weight * positive_score_logsigmoid).sum() / subsampling_weight.sum()
-            negative_sample_loss = -(subsampling_weight * negative_score_logsigmoid).sum() / subsampling_weight.sum()
+
 
             '''
             open comments for relu
             '''
-            positive_sample_loss_relu = (subsampling_weight * positive_score_relu).sum() / subsampling_weight.sum()
-            negative_sample_loss_relu = (subsampling_weight * negative_score_relu).sum() / subsampling_weight.sum()
+            positive_sample_loss = (subsampling_weight * positive_score).sum() / subsampling_weight.sum()
+            negative_sample_loss = (subsampling_weight * negative_score).sum() / subsampling_weight.sum()
 
-
-        print("Positive_sample_loss_logsigmoid: ", positive_sample_loss)
-        print("Negative_sample_loss_logsigmoid: ", negative_sample_loss)
-        print("Positive_sample_loss_relu: ", positive_sample_loss_relu)
-        print("Negative_sample_loss_relu: ", negative_sample_loss_relu)
+        print("positive_sample_loss: ", positive_sample_loss)
+        print("negative_sample_loss: ", negative_sample_loss)
         loss = (positive_sample_loss + negative_sample_loss)/2
         
         if args.regularization != 0.0:
