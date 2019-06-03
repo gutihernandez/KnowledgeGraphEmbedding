@@ -34,7 +34,7 @@ class KGEModel(nn.Module):
         )
 
         self.gamma1 = nn.Parameter(
-            torch.Tensor([gamma+1.5]),
+            torch.Tensor([gamma+8]),
             requires_grad=False
         )
         
