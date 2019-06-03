@@ -264,26 +264,39 @@ class KGEModel(nn.Module):
             negative_sample = negative_sample.cuda()
             subsampling_weight = subsampling_weight.cuda()
 
+
+        #NEGATIVE SCORE!
         negative_score = model((positive_sample, negative_sample), mode=mode)
+        print("Negative score shape: ", negative_score.shape)
+        print("Negative score: ", negative_score)
 
         if args.negative_adversarial_sampling:
             #In self-adversarial sampling, we do not apply back-propagation on the sampling weight
             negative_score = (F.softmax(negative_score * args.adversarial_temperature, dim = 1).detach() 
                               * F.logsigmoid(-negative_score)).sum(dim = 1)
+            print("Negative adversarial sampling is made")
         else:
             negative_score = F.logsigmoid(-negative_score).mean(dim = 1)
+            print("Negative score after logsimoid and meaned")
 
         positive_score = model(positive_sample)
+        print("Positive score shape: ", positive_score.shape)
+        print("Positive score: ", positive_score)
 
         positive_score = F.logsigmoid(positive_score).squeeze(dim = 1)
+        print("Positive score after logsimoid and squeezed")
 
         if args.uni_weight:
+            print("uni_weight...")
             positive_sample_loss = - positive_score.mean()
             negative_sample_loss = - negative_score.mean()
         else:
+            print("non uni_weight.. something with subsampling going on...")
             positive_sample_loss = - (subsampling_weight * positive_score).sum()/subsampling_weight.sum()
             negative_sample_loss = - (subsampling_weight * negative_score).sum()/subsampling_weight.sum()
 
+        print("positive_sample_loss: ", positive_sample_loss)
+        print("negative_sample_loss: ", negative_sample_loss)
         loss = (positive_sample_loss + negative_sample_loss)/2
         
         if args.regularization != 0.0:
