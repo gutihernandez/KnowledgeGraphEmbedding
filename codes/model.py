@@ -34,7 +34,7 @@ class KGEModel(nn.Module):
         )
 
         self.gamma1 = nn.Parameter(
-            torch.Tensor([gamma+0.5]),
+            torch.Tensor([gamma+4]),
             requires_grad=False
         )
         
@@ -307,14 +307,15 @@ class KGEModel(nn.Module):
 
             '''
             logsigmoid:
-            negative_score = F.logsigmoid(-negative_score).mean(dim = 1)
             '''
+            negative_score = F.logsigmoid(-negative_score).mean(dim=1)
 
             '''
             
             relu:
-            '''
             negative_score = F.relu(negative_score).mean(dim=1)
+            '''
+
 
             #print("Negative score after logsimoid and meaned :",negative_score)
 
@@ -327,13 +328,14 @@ class KGEModel(nn.Module):
 
         '''
         logsigmoid:
-        positive_score = F.logsigmoid(positive_score).squeeze(dim = 1)
         '''
+        positive_score = F.logsigmoid(positive_score).squeeze(dim=1)
 
         '''
         relu:
-        '''
         positive_score = F.relu(positive_score).squeeze(dim=1)
+        '''
+
 
         #print("Positive score after logsimoid and squeezed :",positive_score)
 
@@ -341,31 +343,33 @@ class KGEModel(nn.Module):
             #print("uni_weight...")
             '''
             open comments for logsigmoid
+            '''
             positive_sample_loss = -positive_score.mean()
             negative_sample_loss = -negative_score.mean()
-            '''
 
 
             '''
             open comments for relu
-            '''
             positive_sample_loss = positive_score.mean()
             negative_sample_loss = negative_score.mean()
+            '''
+
 
         else:
             #print("non uni_weight.. something with subsampling going on...")
             '''
             open comments for logsigmoid
-            positive_sample_loss = -(subsampling_weight * positive_score).sum()/subsampling_weight.sum()
-            negative_sample_loss = -(subsampling_weight * negative_score).sum()/subsampling_weight.sum()
             '''
+            positive_sample_loss = -(subsampling_weight * positive_score).sum() / subsampling_weight.sum()
+            negative_sample_loss = -(subsampling_weight * negative_score).sum() / subsampling_weight.sum()
 
 
             '''
             open comments for relu
-            '''
             positive_sample_loss = (subsampling_weight * positive_score).sum() / subsampling_weight.sum()
             negative_sample_loss = (subsampling_weight * negative_score).sum() / subsampling_weight.sum()
+            '''
+
 
         #print("positive_sample_loss: ", positive_sample_loss)
         #print("negative_sample_loss: ", negative_sample_loss)
