@@ -176,8 +176,10 @@ class KGEModel(nn.Module):
 
         if two_gamma == 1:
             score = self.gamma1.item() - torch.norm(score, p=1, dim=2)
+            print("Bigger gamma is used ( gamma1 )...")
         else:
             score = self.gamma.item() - torch.norm(score, p=1, dim=2)
+            print("Regular gamma is used ( gamma )...")
         return score
 
     def DistMult(self, head, relation, tail, mode, two_gamma=0):
@@ -280,7 +282,7 @@ class KGEModel(nn.Module):
             negative_sample = negative_sample.cuda()
             subsampling_weight = subsampling_weight.cuda()
 
-        print("Model: ", model)
+        print("Model: ", model.model_name)
         #NEGATIVE SCORE!
         '''
         SCORE IS CALCULATED AS BELOW:
