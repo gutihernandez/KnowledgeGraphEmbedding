@@ -33,7 +33,7 @@ class KGEModel(nn.Module):
             requires_grad=False
         )
 
-        self.gamma2 = nn.Parameter(
+        self.gamma1 = nn.Parameter(
             torch.Tensor([gamma+10]),
             requires_grad=False
         )
@@ -174,10 +174,10 @@ class KGEModel(nn.Module):
             score = (head + relation) - tail
 
 
-        if two_gamma == 0:
+        if two_gamma == 1:
+            score = self.gamma1.item() - torch.norm(score, p=1, dim=2)
+        else:
             score = self.gamma.item() - torch.norm(score, p=1, dim=2)
-        else two_gamma == 1:
-            score = self.gamma2.item() - torch.norm(score, p=1, dim=2)
         return score
 
     def DistMult(self, head, relation, tail, mode, two_gamma=0):
@@ -234,10 +234,10 @@ class KGEModel(nn.Module):
         score = score.norm(dim = 0)
 
 
-        if two_gamma == 0:
-            score = self.gamma.item() - score.sum(dim = 2)
-        else:
+        if two_gamma == 1:
             score = self.gamma1.item() - score.sum(dim = 2)
+        else:
+            score = self.gamma.item() - score.sum(dim = 2)
         return score
 
     def pRotatE(self, head, relation, tail, mode, two_gamma=0):
@@ -257,10 +257,10 @@ class KGEModel(nn.Module):
         score = torch.sin(score)            
         score = torch.abs(score)
 
-        if two_gamma == 0:
-            score = self.gamma.item() - score.sum(dim = 2) * self.modulus
+        if two_gamma == 1:
+            score = self.gamma1.item() - score.sum(dim = 2) * self.modulus
         else:
-            score = self.gamma1.item() - score.sum(dim=2) * self.modulus
+            score = self.gamma.item() - score.sum(dim=2) * self.modulus
         return score
     
     @staticmethod
