@@ -32,6 +32,11 @@ class KGEModel(nn.Module):
             torch.Tensor([gamma]), 
             requires_grad=False
         )
+
+        self.gamma2 = nn.Parameter(
+            torch.Tensor([gamma+10]),
+            requires_grad=False
+        )
         
         self.embedding_range = nn.Parameter(
             torch.Tensor([(self.gamma.item() + self.epsilon) / hidden_dim]), 
@@ -162,16 +167,20 @@ class KGEModel(nn.Module):
         
         return score
     
-    def TransE(self, head, relation, tail, mode):
+    def TransE(self, head, relation, tail, mode, two_gamma=0):
         if mode == 'head-batch':
             score = head + (relation - tail)
         else:
             score = (head + relation) - tail
 
-        score = self.gamma.item() - torch.norm(score, p=1, dim=2)
+
+        if two_gamma == 0:
+            score = self.gamma.item() - torch.norm(score, p=1, dim=2)
+        else two_gamma == 1:
+            score = self.gamma2.item() - torch.norm(score, p=1, dim=2)
         return score
 
-    def DistMult(self, head, relation, tail, mode):
+    def DistMult(self, head, relation, tail, mode, two_gamma=0):
         if mode == 'head-batch':
             score = head * (relation * tail)
         else:
@@ -180,7 +189,7 @@ class KGEModel(nn.Module):
         score = score.sum(dim = 2)
         return score
 
-    def ComplEx(self, head, relation, tail, mode):
+    def ComplEx(self, head, relation, tail, mode, two_gamma=0):
         re_head, im_head = torch.chunk(head, 2, dim=2)
         re_relation, im_relation = torch.chunk(relation, 2, dim=2)
         re_tail, im_tail = torch.chunk(tail, 2, dim=2)
@@ -197,7 +206,7 @@ class KGEModel(nn.Module):
         score = score.sum(dim = 2)
         return score
 
-    def RotatE(self, head, relation, tail, mode):
+    def RotatE(self, head, relation, tail, mode, two_gamma=0):
         pi = 3.14159265358979323846
         
         re_head, im_head = torch.chunk(head, 2, dim=2)
@@ -224,10 +233,14 @@ class KGEModel(nn.Module):
         score = torch.stack([re_score, im_score], dim = 0)
         score = score.norm(dim = 0)
 
-        score = self.gamma.item() - score.sum(dim = 2)
+
+        if two_gamma == 0:
+            score = self.gamma.item() - score.sum(dim = 2)
+        else:
+            score = self.gamma1.item() - score.sum(dim = 2)
         return score
 
-    def pRotatE(self, head, relation, tail, mode):
+    def pRotatE(self, head, relation, tail, mode, two_gamma=0):
         pi = 3.14159262358979323846
         
         #Make phases of entities and relations uniformly distributed in [-pi, pi]
@@ -244,7 +257,10 @@ class KGEModel(nn.Module):
         score = torch.sin(score)            
         score = torch.abs(score)
 
-        score = self.gamma.item() - score.sum(dim = 2) * self.modulus
+        if two_gamma == 0:
+            score = self.gamma.item() - score.sum(dim = 2) * self.modulus
+        else:
+            score = self.gamma1.item() - score.sum(dim=2) * self.modulus
         return score
     
     @staticmethod
@@ -266,7 +282,12 @@ class KGEModel(nn.Module):
 
         print("Model: ", model)
         #NEGATIVE SCORE!
-        negative_score = model((positive_sample, negative_sample), mode=mode)
+        '''
+        SCORE IS CALCULATED AS BELOW:
+        score = self.gamma.item() - torch.norm(score, p=1, dim=2)
+        THAT IS WHY WHILE WE ARE USING NEG_SCORE WE MULTIPLY IT WITH -1
+        '''
+        negative_score = model((positive_sample, negative_sample), mode,  two_gamma=1)
         print("Negative score shape: ", negative_score.shape)
         print("Negative score: ", negative_score)
 
@@ -276,10 +297,11 @@ class KGEModel(nn.Module):
                               * F.logsigmoid(-negative_score)).sum(dim = 1)
             print("Negative adversarial sampling is made")
         else:
+            #READ ABOVE COMMENT WHICH IS ABOUT HOW SCORE IS CALCULATED
             negative_score = F.logsigmoid(-negative_score).mean(dim = 1)
             print("Negative score after logsimoid and meaned :",negative_score)
 
-        positive_score = model(positive_sample)
+        positive_score = model(positive_sample, two_gamma=0)
         print("Positive score shape: ", positive_score.shape)
         print("Positive score: ", positive_score)
 
