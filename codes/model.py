@@ -315,12 +315,12 @@ class KGEModel(nn.Module):
 
         if args.uni_weight:
             #print("uni_weight...")
-            positive_sample_loss = - positive_score.mean()
-            negative_sample_loss = - negative_score.mean()
+            positive_sample_loss =  positive_score.mean()
+            negative_sample_loss =  negative_score.mean()
         else:
             #print("non uni_weight.. something with subsampling going on...")
-            positive_sample_loss = - (subsampling_weight * positive_score).sum()/subsampling_weight.sum()
-            negative_sample_loss = - (subsampling_weight * negative_score).sum()/subsampling_weight.sum()
+            positive_sample_loss =  (subsampling_weight * positive_score).sum()/subsampling_weight.sum()
+            negative_sample_loss =  (subsampling_weight * negative_score).sum()/subsampling_weight.sum()
 
         #print("positive_sample_loss: ", positive_sample_loss)
         #print("negative_sample_loss: ", negative_sample_loss)
