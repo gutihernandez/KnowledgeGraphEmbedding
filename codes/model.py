@@ -289,6 +289,7 @@ class KGEModel(nn.Module):
         score = self.gamma.item() - torch.norm(score, p=1, dim=2)
         THAT IS WHY WHILE WE ARE USING NEG_SCORE WE MULTIPLY IT WITH -1
         '''
+        print("negative score calculation is started...")
         negative_score = model((positive_sample, negative_sample), mode,  two_gamma=1)
         print("Negative score shape: ", negative_score.shape)
         print("Negative score: ", negative_score)
@@ -300,14 +301,15 @@ class KGEModel(nn.Module):
             print("Negative adversarial sampling is made")
         else:
             #READ ABOVE COMMENT WHICH IS ABOUT HOW SCORE IS CALCULATED
-            negative_score = F.logsigmoid(-negative_score).mean(dim = 1)
+            negative_score = F.relu(-negative_score).mean(dim = 1)
             print("Negative score after logsimoid and meaned :",negative_score)
 
+        print("positive score calculation is started...")
         positive_score = model(positive_sample, two_gamma=0)
         print("Positive score shape: ", positive_score.shape)
         print("Positive score: ", positive_score)
 
-        positive_score = F.logsigmoid(positive_score).squeeze(dim = 1)
+        positive_score = F.relu(positive_score).squeeze(dim = 1)
         print("Positive score after logsimoid and squeezed :",positive_score)
 
         if args.uni_weight:
