@@ -264,7 +264,7 @@ class KGEModel(nn.Module):
             negative_sample = negative_sample.cuda()
             subsampling_weight = subsampling_weight.cuda()
 
-
+        print("Model: ", model)
         #NEGATIVE SCORE!
         negative_score = model((positive_sample, negative_sample), mode=mode)
         print("Negative score shape: ", negative_score.shape)
@@ -277,14 +277,14 @@ class KGEModel(nn.Module):
             print("Negative adversarial sampling is made")
         else:
             negative_score = F.logsigmoid(-negative_score).mean(dim = 1)
-            print("Negative score after logsimoid and meaned")
+            print("Negative score after logsimoid and meaned :",negative_score)
 
         positive_score = model(positive_sample)
         print("Positive score shape: ", positive_score.shape)
         print("Positive score: ", positive_score)
 
         positive_score = F.logsigmoid(positive_score).squeeze(dim = 1)
-        print("Positive score after logsimoid and squeezed")
+        print("Positive score after logsimoid and squeezed :",positive_score)
 
         if args.uni_weight:
             print("uni_weight...")
