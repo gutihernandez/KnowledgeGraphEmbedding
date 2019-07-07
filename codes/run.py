@@ -395,7 +395,6 @@ def main(args):
 
             training_logs.append(log)
             training_logs.append(log2)
-            training_logs.append(optimizer_total_log)
 
             if step >= warm_up_steps:
                 current_learning_rate = current_learning_rate / 10
