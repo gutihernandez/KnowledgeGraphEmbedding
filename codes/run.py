@@ -407,6 +407,7 @@ def main(args):
 
 
             print("Lambda1: ", lambda_1.item())
+            print("Lambda2: ", lambda_2.item())
             training_logs.append(log)
             training_logs.append(log2)
 
