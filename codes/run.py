@@ -385,7 +385,7 @@ def main(args):
             neg_total = - neg_total.mean()
             
             loss_total = (pos_total + neg_total) / 2
-            #print("loss_total: ", loss_total)
+            print("loss_total: ", loss_total)
             #print("loss_total.shape: ", loss_total.shape)
 
             loss_total.backward()
@@ -395,6 +395,7 @@ def main(args):
             print("Lambda1: ", lambda_1)
             training_logs.append(log)
             training_logs.append(log2)
+
 
             if step >= warm_up_steps:
                 current_learning_rate = current_learning_rate / 10
