@@ -49,7 +49,7 @@ then
 echo "Start Evaluation on Valid Data Set......"
 
 CUDA_VISIBLE_DEVICES=$GPU_DEVICE python -u $CODE_PATH/run.py --do_valid --cuda -init $SAVE
-    
+
 elif [ $MODE == "test" ]
 then
 

@@ -20,6 +20,9 @@ class TrainDataset(Dataset):
         self.mode = mode
         self.count = self.count_frequency(triples)
         self.true_head, self.true_tail = self.get_true_head_and_tail(self.triples)
+
+        np.random.seed(1)
+        torch.manual_seed(1)
         
     def __len__(self):
         return self.len
