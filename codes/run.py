@@ -382,8 +382,8 @@ def main(args):
             #lambda_2 = 1 - lambda_1
             #print("lambda_2: ", lambda_2)
             #print("lambda_2.requires_grad: ", lambda_2.requires_grad)
-            print("pos_score_mod1: ",pos_score_mod1)
-            print("pos_score_mod2: ", pos_score_mod2)
+            #print("pos_score_mod1: ",pos_score_mod1)
+            #print("pos_score_mod2: ", pos_score_mod2)
             pos_total = lambda_1 * pos_score_mod1 + lambda_2 * pos_score_mod2
             #print("pos_total: ", pos_total)
             #print("pos_total.shape: ", pos_total.shape)
@@ -393,8 +393,8 @@ def main(args):
             #print("after calculations pos_total: ", pos_total)
             #print("after calculations pos_total.shape: ", pos_total.shape)
             neg_total = lambda_1 * neg_score_mod1 + lambda_2 * neg_score_mod2
-            print("neg_score_mod1: ", neg_score_mod1)
-            print("neg_score_mod2: ", neg_score_mod2)
+            #print("neg_score_mod1: ", neg_score_mod1)
+            #print("neg_score_mod2: ", neg_score_mod2)
             neg_total = F.logsigmoid(-neg_total).mean(dim=1)
             neg_total = - neg_total.mean()
             
