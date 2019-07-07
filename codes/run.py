@@ -385,7 +385,7 @@ def main(args):
             neg_total = - neg_total.mean()
             
             loss_total = (pos_total + neg_total) / 2
-            print("loss_total: ", loss_total)
+            print("loss_total: ", loss_total.item())
             #print("loss_total.shape: ", loss_total.shape)
 
             loss_total.backward()
