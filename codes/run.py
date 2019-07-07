@@ -370,8 +370,8 @@ def main(args):
                 lambda_1 = 0
 
             lambda_2 = 1 - lambda_1
-            #print("lambda_2: ", lambda_2)
-            #print("lambda_2.requires_grad: ", lambda_2.requires_grad)
+            print("lambda_2: ", lambda_2)
+            print("lambda_2.requires_grad: ", lambda_2.requires_grad)
             pos_total = lambda_1 * pos_score_mod1 + (1-lambda_1) * pos_score_mod2
             #print("pos_total: ", pos_total)
             #print("pos_total.shape: ", pos_total.shape)
@@ -392,7 +392,7 @@ def main(args):
             optimizer_total.step()
 
 
-
+            print("Lambda1: ", lambda_1)
             training_logs.append(log)
             training_logs.append(log2)
 
