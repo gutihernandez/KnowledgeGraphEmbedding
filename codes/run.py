@@ -350,11 +350,11 @@ def main(args):
 
             #print("cloning...")
 
-            pos_score_mod1 = torch.tensor(positive_score_model1.data.clone())
-            neg_score_mod1 = torch.tensor(negative_score_model1.data.clone())
+            pos_score_mod1 = torch.tensor(positive_score_model1.clone().detach())
+            neg_score_mod1 = torch.tensor(negative_score_model1.clone().detach())
 
-            pos_score_mod2 = torch.tensor(positive_score_model2.data.clone())
-            neg_score_mod2 = torch.tensor(negative_score_model2.data.clone())
+            pos_score_mod2 = torch.tensor(positive_score_model2.clone().detach())
+            neg_score_mod2 = torch.tensor(negative_score_model2.clone().detach())
 
             #print("cloned...")
             #print("pos_score_mod1: ", pos_score_mod1)
@@ -370,8 +370,8 @@ def main(args):
                 lambda_1 = 0
 
             lambda_2 = 1 - lambda_1
-            print("lambda_2: ", lambda_2)
-            print("lambda_2.requires_grad: ", lambda_2.requires_grad)
+            #print("lambda_2: ", lambda_2)
+            #print("lambda_2.requires_grad: ", lambda_2.requires_grad)
             pos_total = lambda_1 * pos_score_mod1 + (1-lambda_1) * pos_score_mod2
             #print("pos_total: ", pos_total)
             #print("pos_total.shape: ", pos_total.shape)
