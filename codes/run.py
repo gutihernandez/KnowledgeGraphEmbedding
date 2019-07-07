@@ -336,7 +336,7 @@ def main(args):
 
         # Training Loop
 
-        lambda_1 = torch.tensor(np.random.random(), requires_grad=True).cuda()
+        lambda_1 = torch.tensor(np.random.random(), requires_grad=True, device="cuda")
         print("lambda_1.requires_grad: ",lambda_1.requires_grad)
         print("lambda_1: ", lambda_1)
         optimizer_total = torch.optim.Adam([lambda_1], lr=0.0005)
