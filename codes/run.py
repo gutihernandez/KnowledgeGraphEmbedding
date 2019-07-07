@@ -357,7 +357,7 @@ def main(args):
 
             lambda_2 = 1 - lambda_1
             print("lambda_2: ", lambda_2)
-            pos_total = lambda_1 * positive_score_model1 + lambda_2 * positive_score_model2
+            pos_total = lambda_1 * positive_score_model1 + (1-lambda_1) * positive_score_model2
             print("pos_total: ", pos_total)
             print("pos_total.shape: ", pos_total.shape)
             pos_total = F.logsigmoid(pos_total).squeeze(dim=1)
