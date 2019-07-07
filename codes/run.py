@@ -336,40 +336,35 @@ def main(args):
 
         # Training Loop
 
-        lambda_n_1 = torch.tensor(np.random.random())
-        lambda_p_1= torch.tensor(np.random.random())
-        lambda_n_1.cuda()
-        lambda_p_1.cuda()
-        optimizer_total = torch.optim.Adam([lambda_n_1, lambda_p_1], lr=0.0005)
+        lambda_1 = torch.tensor(np.random.random())
+        print("lambda_1: ", lambda_1)
+        optimizer_total = torch.optim.Adam([lambda_1], lr=0.0005)
 
         for step in range(init_step, args.max_steps):
 
             log, positive_score_model1, negative_score_model1 = kge_model.train_step(kge_model, optimizer, train_iterator, args)
-            #TODO: log2?
             log2, positive_score_model2, negative_score_model2 = kge_model2.train_step(kge_model2, optimizer2, train_iterator2, args)
-
+            print("positive_score_model1: ", positive_score_model1)
+            print("positive_score_model1.shape: ", positive_score_model1.shape)
             #TRAINING FOR LOSS TOTAL (calculating one score from two models)
             #clear the optimizer
             optimizer_total.zero_grad()
             #check lambda's boundaries
-            if(lambda_n_1 > 1):
-                lambda_n_1 = 1
-            if (lambda_n_1 < 0):
-                lambda_n_1 = 0
+            if (lambda_1 > 1):
+                lambda_1 = 1
+            if (lambda_1 < 0):
+                lambda_1 = 0
 
-            if (lambda_p_1 > 1):
-                lambda_p_1 = 1
-            if (lambda_p_1 < 0):
-                lambda_p_1 = 0
-
-            lambda_n_2 = 1 - lambda_n_1
-            lambda_p_2 = 1 - lambda_p_1
-
-            pos_total = lambda_p_1 * positive_score_model1 + lambda_p_2 * positive_score_model2
+            lambda_2 = 1 - lambda_1
+            print("lambda_2: ", lambda_2)
+            pos_total = lambda_1 * positive_score_model1 + lambda_2 * positive_score_model2
+            print("pos_total: ", pos_total)
+            print("pos_total.shape: ", pos_total.shape)
             pos_total = F.logsigmoid(pos_total).squeeze(dim=1)
             pos_total = - pos_total.mean()
-            
-            neg_total = lambda_n_1 * negative_score_model1 + lambda_n_2 * negative_score_model2
+            print("after calculations pos_total: ", pos_total)
+            print("after calculations pos_total.shape: ", pos_total.shape)
+            neg_total = lambda_1 * negative_score_model1 + lambda_2 * negative_score_model2
             neg_total = F.logsigmoid(-neg_total).mean(dim=1)
             neg_total = - neg_total.mean()
             
