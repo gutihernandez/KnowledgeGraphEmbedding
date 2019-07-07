@@ -337,18 +337,18 @@ def main(args):
         # Training Loop
 
         lambda_1 = torch.tensor(np.random.random(), requires_grad=True, device="cuda")
-        print("lambda_1.requires_grad: ",lambda_1.requires_grad)
-        print("lambda_1: ", lambda_1)
+        #print("lambda_1.requires_grad: ",lambda_1.requires_grad)
+        #print("lambda_1: ", lambda_1)
         optimizer_total = torch.optim.Adam([lambda_1], lr=0.0005)
 
         for step in range(init_step, args.max_steps):
 
             log, positive_score_model1, negative_score_model1 = kge_model.train_step(kge_model, optimizer, train_iterator, args)
             log2, positive_score_model2, negative_score_model2 = kge_model2.train_step(kge_model2, optimizer2, train_iterator2, args)
-            print("positive_score_model1: ", positive_score_model1)
-            print("positive_score_model1.shape: ", positive_score_model1.shape)
+            #print("positive_score_model1: ", positive_score_model1)
+            #print("positive_score_model1.shape: ", positive_score_model1.shape)
 
-            print("cloning...")
+            #print("cloning...")
 
             pos_score_mod1 = torch.tensor(positive_score_model1.data.clone())
             neg_score_mod1 = torch.tensor(negative_score_model1.data.clone())
@@ -356,9 +356,9 @@ def main(args):
             pos_score_mod2 = torch.tensor(positive_score_model2.data.clone())
             neg_score_mod2 = torch.tensor(negative_score_model2.data.clone())
 
-            print("cloned...")
-            print("pos_score_mod1: ", pos_score_mod1)
-            print("pos_score_mod1.shape: ", pos_score_mod1.shape)
+            #print("cloned...")
+            #print("pos_score_mod1: ", pos_score_mod1)
+            #print("pos_score_mod1.shape: ", pos_score_mod1.shape)
 
             #TRAINING FOR LOSS TOTAL (calculating one score from two models)
             #clear the optimizer
@@ -370,23 +370,23 @@ def main(args):
                 lambda_1 = 0
 
             lambda_2 = 1 - lambda_1
-            print("lambda_2: ", lambda_2)
-            print("lambda_2.requires_grad: ", lambda_2.requires_grad)
+            #print("lambda_2: ", lambda_2)
+            #print("lambda_2.requires_grad: ", lambda_2.requires_grad)
             pos_total = lambda_1 * pos_score_mod1 + (1-lambda_1) * pos_score_mod2
-            print("pos_total: ", pos_total)
-            print("pos_total.shape: ", pos_total.shape)
-            print("pos_total.requires_grad: ", pos_total.requires_grad)
+            #print("pos_total: ", pos_total)
+            #print("pos_total.shape: ", pos_total.shape)
+            #print("pos_total.requires_grad: ", pos_total.requires_grad)
             pos_total = F.logsigmoid(pos_total).squeeze(dim=1)
             pos_total = - pos_total.mean()
-            print("after calculations pos_total: ", pos_total)
-            print("after calculations pos_total.shape: ", pos_total.shape)
+            #print("after calculations pos_total: ", pos_total)
+            #print("after calculations pos_total.shape: ", pos_total.shape)
             neg_total = lambda_1 * neg_score_mod1 + lambda_2 * neg_score_mod2
             neg_total = F.logsigmoid(-neg_total).mean(dim=1)
             neg_total = - neg_total.mean()
             
             loss_total = (pos_total + neg_total) / 2
-            print("loss_total: ", loss_total)
-            print("loss_total.shape: ", loss_total.shape)
+            #print("loss_total: ", loss_total)
+            #print("loss_total.shape: ", loss_total.shape)
 
             loss_total.backward()
             optimizer_total.step()
