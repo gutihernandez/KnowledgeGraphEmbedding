@@ -349,11 +349,11 @@ def main(args):
 
             print("cloning...")
 
-            pos_score_mod1 = torch.tensor(positive_score_model1.data().clone())
-            neg_score_mod1 = torch.tensor(negative_score_model1.data().clone())
+            pos_score_mod1 = torch.tensor(positive_score_model1.data.clone())
+            neg_score_mod1 = torch.tensor(negative_score_model1.data.clone())
 
-            pos_score_mod2 = torch.tensor(positive_score_model2.data().clone())
-            neg_score_mod2 = torch.tensor(negative_score_model2.data().clone())
+            pos_score_mod2 = torch.tensor(positive_score_model2.data.clone())
+            neg_score_mod2 = torch.tensor(negative_score_model2.data.clone())
 
             print("cloned...")
             print("pos_score_mod1: ", pos_score_mod1)
