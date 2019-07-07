@@ -337,6 +337,7 @@ def main(args):
         # Training Loop
 
         lambda_1 = torch.tensor(np.random.random())
+        print("lambda_1.requires_grad: ",lambda_1.requires_grad)
         print("lambda_1: ", lambda_1)
         optimizer_total = torch.optim.Adam([lambda_1], lr=0.0005)
 
@@ -370,9 +371,11 @@ def main(args):
 
             lambda_2 = 1 - lambda_1
             print("lambda_2: ", lambda_2)
+            print("lambda_2.requires_grad: ", lambda_2.requires_grad)
             pos_total = lambda_1 * pos_score_mod1 + (1-lambda_1) * pos_score_mod2
             print("pos_total: ", pos_total)
             print("pos_total.shape: ", pos_total.shape)
+            print("pos_total.requires_grad: ", pos_total.requires_grad)
             pos_total = F.logsigmoid(pos_total).squeeze(dim=1)
             pos_total = - pos_total.mean()
             print("after calculations pos_total: ", pos_total)
