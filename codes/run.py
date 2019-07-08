@@ -342,8 +342,9 @@ def main(args):
         #print("lambda_1: ", lambda_1)
         optimizer_total = torch.optim.Adam([lambda_1, lambda_2], lr=0.0005)
 
+        counter = 0
         for step in range(init_step, args.max_steps):
-
+            counter += 1
             log, positive_score_model1, negative_score_model1 = kge_model.train_step(kge_model, optimizer, train_iterator, args)
             log2, positive_score_model2, negative_score_model2 = kge_model2.train_step(kge_model2, optimizer2, train_iterator2, args)
             #print("positive_score_model1: ", positive_score_model1)
@@ -399,15 +400,16 @@ def main(args):
             neg_total = - neg_total.mean()
             
             loss_total = (pos_total + neg_total) / 2
-            print("loss_total: ", loss_total.item())
+
             #print("loss_total.shape: ", loss_total.shape)
 
             loss_total.backward()
             optimizer_total.step()
 
-
-            print("Lambda1: ", lambda_1.item())
-            print("Lambda2: ", lambda_2.item())
+            if counter % 200 == 0:
+                print("loss_total: ", loss_total.item())
+                print("Lambda1: ", lambda_1.item())
+                print("Lambda2: ", lambda_2.item())
             training_logs.append(log)
             training_logs.append(log2)
 
