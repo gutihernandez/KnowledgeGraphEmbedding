@@ -337,10 +337,9 @@ def main(args):
         # Training Loop
 
         lambda_1 = torch.tensor(np.random.random(), requires_grad=True, device="cuda")
-        lambda_2 = torch.tensor(np.random.random(), requires_grad=True, device="cuda")
         #print("lambda_1.requires_grad: ",lambda_1.requires_grad)
         #print("lambda_1: ", lambda_1)
-        optimizer_total = torch.optim.Adam([lambda_1, lambda_2], lr=0.0005)
+        optimizer_total = torch.optim.Adam([lambda_1], lr=0.0005)
 
         counter = 0
         for step in range(init_step, args.max_steps):
@@ -367,20 +366,14 @@ def main(args):
             optimizer_total.zero_grad()
             #check lambda's boundaries
 
-            '''
-            if (lambda_1 > 1):
-                lambda_1 = 1
-            if (lambda_1 < 0):
-                lambda_1 = 0
 
-                
-            if (lambda_2 > 1):
-                lambda_2 = 1
-            if (lambda_2 < 0):
-                lambda_2 = 0
-            
-            '''
-            #lambda_2 = 1 - lambda_1
+            if (lambda_1 > 1):
+                lambda_1 = torch.tensor(1.0, requires_grad=True, device="cuda")
+            if (lambda_1 < 0):
+                lambda_1 = torch.tensor(0.0, requires_grad=True, device="cuda")
+
+
+            lambda_2 = 1 - lambda_1
             #print("lambda_2: ", lambda_2)
             #print("lambda_2.requires_grad: ", lambda_2.requires_grad)
             #print("pos_score_mod1: ",pos_score_mod1)
