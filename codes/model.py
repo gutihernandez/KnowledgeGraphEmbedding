@@ -336,7 +336,7 @@ class KGEModel(nn.Module):
         return log, negative_score_initial, positive_score_inital
 
     @staticmethod
-    def test_step(model, model2, test_triples, all_true_triples, args):
+    def test_step(model, model2, test_triples, all_true_triples, args, lambda1=1, lambda2=1):
         '''
         Evaluate the model on test or valid datasets
         '''
@@ -423,7 +423,8 @@ class KGEModel(nn.Module):
                         #print("score 1:", score)
                         #print("score 2:", score2)
 
-                        score = score + score2
+                        #todo: check!
+                        score = lambda1 * score + lambda2 * score2
 
                         #print("score final:", score)
 
