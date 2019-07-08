@@ -447,7 +447,7 @@ def main(args):
                 log_metrics('Training average', step, metrics)
                 training_logs = []
 
-            if args.do_valid and step+1 % args.valid_steps == 0:
+            if args.do_valid and step % args.valid_steps == 0:
                 logging.info('Evaluating on Valid Dataset...')
                 metrics = kge_model.test_step(kge_model,kge_model2, valid_triples, all_true_triples, args, lambda1=lambda_1, lambda2=lambda_2)
                 log_metrics('Valid', step, metrics)
